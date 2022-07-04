@@ -1,13 +1,16 @@
 // useState: greeting
 // http://localhost:3000/isolated/exercise/01.js
 
-import * as React from 'react'
+import * as React from 'react';
+import PropTypes from 'prop-types';
 
-function Greeting() {
-  // 💣 delete this variable declaration and replace it with a React.useState call
-  const name = ''
+function Greeting(props) {
+  const {initialName = 'World'} = props;
+
+  const [name, setName] = React.useState(initialName);
 
   function handleChange(event) {
+    setName(event.currentTarget.value);
     // 🐨 update the name here based on event.target.value
   }
 
@@ -15,15 +18,23 @@ function Greeting() {
     <div>
       <form>
         <label htmlFor="name">Name: </label>
-        <input onChange={handleChange} id="name" />
+        <input value={name} onChange={handleChange} id="name" />
       </form>
-      {name ? <strong>Hello {name}</strong> : 'Please type your name'}
+      {name.length > 0 ? (
+        <strong>Hello {name}</strong>
+      ) : (
+        'Please type your name'
+      )}
     </div>
-  )
+  );
 }
+
+Greeting.propTypes = {
+  initialName: PropTypes.string,
+};
 
 function App() {
-  return <Greeting />
+  return <Greeting initialName="Senna" />;
 }
 
-export default App
+export default App;
