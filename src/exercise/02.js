@@ -2,14 +2,18 @@
 // http://localhost:3000/isolated/exercise/02.js
 
 import * as React from 'react';
+import useLocalStorageState from '../hooks/useLocalStorageState';
 
 const LS_NAME_KEY = 'react-hook-name';
 
 function Greeting({initialName = ''}) {
   // 🐨 initialize the state to the value from localStorage
   // 💰 window.localStorage.getItem('name') ?? initialName
+
+  const {readFromLS, storeOnLS} = useLocalStorageState();
+
   const [name, setName] = React.useState(
-    () => window.localStorage.getItem(LS_NAME_KEY) ?? initialName,
+    () => readFromLS(LS_NAME_KEY) ?? initialName,
   );
 
   // 🐨 Here's where you'll use `React.useEffect`.
@@ -17,9 +21,8 @@ function Greeting({initialName = ''}) {
   // 💰 window.localStorage.setItem('name', name)
 
   React.useEffect(() => {
-    if (window && window.localStorage)
-      window.localStorage.setItem(LS_NAME_KEY, name);
-  }, [name]);
+    storeOnLS(LS_NAME_KEY, name);
+  }, [name, storeOnLS]);
 
   function handleChange(event) {
     setName(event.target.value);
