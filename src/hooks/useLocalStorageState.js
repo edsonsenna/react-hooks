@@ -1,7 +1,7 @@
 const useLocalStorageState = () => {
   const readFromLS = (key = '') => {
     if (window && window.localStorage && key.length > 0)
-      return window.localStorage.getItem(key);
+      return window.localStorage.getItem(JSON.parse(key));
     return '';
   };
 
