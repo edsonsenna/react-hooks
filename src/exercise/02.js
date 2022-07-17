@@ -7,22 +7,7 @@ import useLocalStorageState from '../hooks/useLocalStorageState';
 const LS_NAME_KEY = 'react-hook-name';
 
 function Greeting({initialName = ''}) {
-  // 🐨 initialize the state to the value from localStorage
-  // 💰 window.localStorage.getItem('name') ?? initialName
-
-  const {readFromLS, storeOnLS} = useLocalStorageState();
-
-  const [name, setName] = React.useState(
-    () => readFromLS(LS_NAME_KEY) ?? initialName,
-  );
-
-  // 🐨 Here's where you'll use `React.useEffect`.
-  // The callback should set the `name` in localStorage.
-  // 💰 window.localStorage.setItem('name', name)
-
-  React.useEffect(() => {
-    storeOnLS(LS_NAME_KEY, name);
-  }, [name, storeOnLS]);
+  const [name, setName] = useLocalStorageState(LS_NAME_KEY, initialName);
 
   function handleChange(event) {
     setName(event.target.value);

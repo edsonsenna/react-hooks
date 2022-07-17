@@ -1,19 +1,18 @@
-const useLocalStorageState = () => {
-  const readFromLS = (key = '') => {
-    if (window && window.localStorage && key.length > 0)
-      return JSON.parse(window.localStorage.getItem(key));
-    return '';
-  };
+import React from 'react';
+import useLocalStorage from './useLocalStorage';
 
-  const storeOnLS = (key = '', value = '') => {
-    if (window && window.localStorage && key.length > 0 && value)
-      window.localStorage.setItem(key, JSON.stringify(value));
-  };
+const useLocalStorageState = (key, defaultValue = '') => {
+  const {readFromLS, storeOnLS} = useLocalStorage();
 
-  return {
-    readFromLS,
-    storeOnLS,
-  };
+  const [state, setState] = React.useState(
+    () => readFromLS(key) ?? defaultValue,
+  );
+
+  React.useEffect(() => {
+    storeOnLS(key, state);
+  }, [key, state, storeOnLS]);
+
+  return [state, setState];
 };
 
 export default useLocalStorageState;
