@@ -2,14 +2,23 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 import * as React from 'react';
+import useLocalStorageState from '../hooks/useLocalStorageState';
 
+const initalSquares = Array(9).fill(null);
 function Board() {
-  // 🐨 squares is the state for this component. Add useState for squares
-  // const squares = Array(9).fill(null)
-  const [squares, setSquares] = React.useState(
-    () =>
-      JSON.parse(localStorage.getItem('current-game')) || Array(9).fill(null),
+  const [squaresOnLS, setSquaresOnLS] = useLocalStorageState(
+    'current-game',
+    initalSquares,
   );
+  // 🐨 squares is the state for this component. Add useState for squares
+  // const squares = initalSquares
+  const [squares, setSquares] = React.useState(
+    () => JSON.parse(squaresOnLS) || initalSquares,
+  );
+
+  React.useEffect(() => {
+    setSquaresOnLS(JSON.stringify(squares));
+  }, [squares, setSquaresOnLS]);
 
   // 🐨 We'll need the following bits of derived state:
   // - nextValue ('X' or 'O')
@@ -43,14 +52,11 @@ function Board() {
     const updatedSquares = squares.map((square, index) =>
       index === squareIndex ? nextValue : square,
     );
-    localStorage.setItem('current-game', JSON.stringify(updatedSquares));
     setSquares(updatedSquares);
   }
 
   function restart() {
-    // 🐨 reset the squares
-    // 💰 `Array(9).fill(null)` will do it!
-    setSquares(Array(9).fill(null));
+    setSquares(initalSquares);
   }
 
   function renderSquare(i) {
