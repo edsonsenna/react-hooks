@@ -6,7 +6,10 @@ import * as React from 'react';
 function Board() {
   // 🐨 squares is the state for this component. Add useState for squares
   // const squares = Array(9).fill(null)
-  const [squares, setSquares] = React.useState(Array(9).fill(null));
+  const [squares, setSquares] = React.useState(
+    () =>
+      JSON.parse(localStorage.getItem('current-game')) || Array(9).fill(null),
+  );
 
   // 🐨 We'll need the following bits of derived state:
   // - nextValue ('X' or 'O')
@@ -40,6 +43,7 @@ function Board() {
     const updatedSquares = squares.map((square, index) =>
       index === squareIndex ? nextValue : square,
     );
+    localStorage.setItem('current-game', JSON.stringify(updatedSquares));
     setSquares(updatedSquares);
   }
 
