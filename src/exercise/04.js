@@ -38,14 +38,21 @@ function Board({currentSquares, onSquareClick}) {
 
 function Game() {
   const [historyOnLS, setHistoryOnLS] = useLocalStorageState(
-    'current-game',
+    'current-game:history',
     JSON.stringify(initialHistory),
+  );
+
+  const [currentStepOnLS, setCurrentStepOnLS] = useLocalStorageState(
+    'current-game:step',
+    JSON.stringify(0),
   );
 
   const [history, setHistory] = React.useState(
     () => JSON.parse(historyOnLS) || initialHistory,
   );
-  const [currentStep, setCurrentStep] = React.useState(0);
+  const [currentStep, setCurrentStep] = React.useState(
+    () => JSON.parse(currentStepOnLS) || 0,
+  );
   const [currentSquares, setCurrentSquares] = React.useState([]);
 
   const nextValue = calculateNextValue(currentSquares);
@@ -67,6 +74,10 @@ function Game() {
   React.useEffect(() => {
     setHistoryOnLS(JSON.stringify(history));
   }, [history, setHistoryOnLS]);
+
+  React.useEffect(() => {
+    setCurrentStepOnLS(JSON.stringify(currentStep));
+  }, [currentStep, setCurrentStepOnLS]);
 
   React.useEffect(() => {
     if (history.length > 0) {
