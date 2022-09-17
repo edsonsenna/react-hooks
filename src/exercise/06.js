@@ -16,6 +16,7 @@ import {
 function PokemonInfo({pokemonName}) {
   // 🐨 Have state for the pokemon (null)
   const [pokemon, setPokemon] = React.useState(null);
+  const [error, setError] = React.useState(null);
   // 🐨 use React.useEffect where the callback should be called whenever the
   // pokemon name changes.
 
@@ -23,10 +24,12 @@ function PokemonInfo({pokemonName}) {
     const fetchPokemonData = async () => {
       if (!pokemonName) return;
 
+      setError(null);
       setPokemon(null);
 
-      return fetchPokemon(pokemonName).then(pokemonData =>
-        setPokemon(pokemonData),
+      return fetchPokemon(pokemonName).then(
+        pokemonData => setPokemon(pokemonData),
+        error => setError(error),
       );
     };
     fetchPokemonData();
@@ -44,14 +47,24 @@ function PokemonInfo({pokemonName}) {
   //   2. pokemonName but no pokemon: <PokemonInfoFallback name={pokemonName} />
   //   3. pokemon: <PokemonDataView pokemon={pokemon} />
 
-  const PokemonInfo =
-    pokemonName && !pokemon ? (
-      <PokemonInfoFallback name={pokemonName} />
-    ) : (
-      <PokemonDataView pokemon={pokemon} />
+  if (error) {
+    return (
+      <div role="alert">
+        There was an error:{' '}
+        <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
+      </div>
     );
+  }
 
-  return pokemonName ? PokemonInfo : 'Submit a pokemon';
+  if (!pokemonName) {
+    return 'Submit a pokemon';
+  }
+
+  if (pokemonName && !pokemon) {
+    return <PokemonInfoFallback name={pokemonName} />;
+  }
+
+  return <PokemonDataView pokemon={pokemon} />;
 }
 
 function App() {
