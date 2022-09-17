@@ -13,10 +13,18 @@ import {
   PokemonInfoFallback,
 } from '../pokemon';
 
+const Statuses = {
+  idle: 'idle',
+  pending: 'pending',
+  resolved: 'resolved',
+  rejected: 'rejected',
+};
+
 function PokemonInfo({pokemonName}) {
   // 🐨 Have state for the pokemon (null)
   const [pokemon, setPokemon] = React.useState(null);
   const [error, setError] = React.useState(null);
+  const [status, setStatus] = React.useState(Statuses.idle);
   // 🐨 use React.useEffect where the callback should be called whenever the
   // pokemon name changes.
 
@@ -26,14 +34,25 @@ function PokemonInfo({pokemonName}) {
 
       setError(null);
       setPokemon(null);
+      setStatus(Statuses.pending);
 
       return fetchPokemon(pokemonName).then(
-        pokemonData => setPokemon(pokemonData),
-        error => setError(error),
+        pokemonData => {
+          setPokemon(pokemonData);
+          setStatus(Statuses.resolved);
+        },
+        error => {
+          setError(error);
+          setStatus(Statuses.rejected);
+        },
       );
     };
     fetchPokemonData();
   }, [pokemonName]);
+
+  React.useEffect(() => {
+    console.log('Changing status: ', status);
+  }, [status]);
   // 💰 DON'T FORGET THE DEPENDENCIES ARRAY!
   // 💰 if the pokemonName is falsy (an empty string) then don't bother making the request (exit early).
   // 🐨 before calling `fetchPokemon`, clear the current pokemon state by setting it to null.
