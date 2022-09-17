@@ -18,28 +18,32 @@ const Statuses = {
 };
 
 function PokemonInfo({pokemonName}) {
-  const [error, setError] = React.useState(null);
   const [computedState, setComputedState] = React.useState({
     status: Statuses.idle,
     pokemon: null,
+    error: null,
   });
+
+  const {status, pokemon, error} = computedState;
 
   React.useEffect(() => {
     const fetchPokemonData = async () => {
       if (!pokemonName) return;
 
-      setComputedState({status: Statuses.pending, pokemon: null});
-      setError(null);
-
+      setComputedState({status: Statuses.pending, pokemon: null, error: null});
       return fetchPokemon(pokemonName).then(
         pokemonData => {
-          setComputedState({status: Statuses.resolved, pokemon: pokemonData});
+          setComputedState(oldComputedState => ({
+            ...oldComputedState,
+            status: Statuses.resolved,
+            pokemon: pokemonData,
+          }));
         },
         error => {
-          setError(error);
           setComputedState(oldComputedState => ({
             ...oldComputedState,
             status: Statuses.rejected,
+            error,
           }));
         },
       );
@@ -47,19 +51,19 @@ function PokemonInfo({pokemonName}) {
     fetchPokemonData();
   }, [pokemonName]);
 
-  if (computedState.status === Statuses.idle) {
+  if (status === Statuses.idle) {
     return 'Submit a pokemon';
-  } else if (computedState.status === Statuses.pending) {
+  } else if (status === Statuses.pending) {
     return <PokemonInfoFallback name={pokemonName} />;
-  } else if (computedState.status === Statuses.rejected) {
+  } else if (status === Statuses.rejected) {
     return (
       <div role="alert">
         There was an error:{' '}
         <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
       </div>
     );
-  } else if (computedState.status === Statuses.resolved) {
-    return <PokemonDataView pokemon={computedState.pokemon} />;
+  } else if (status === Statuses.resolved) {
+    return <PokemonDataView pokemon={pokemon} />;
   }
 
   throw new Error('This should be impossible.');
