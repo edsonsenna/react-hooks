@@ -50,9 +50,6 @@ function PokemonInfo({pokemonName}) {
     fetchPokemonData();
   }, [pokemonName]);
 
-  React.useEffect(() => {
-    console.log('Changing status: ', status);
-  }, [status]);
   // 💰 DON'T FORGET THE DEPENDENCIES ARRAY!
   // 💰 if the pokemonName is falsy (an empty string) then don't bother making the request (exit early).
   // 🐨 before calling `fetchPokemon`, clear the current pokemon state by setting it to null.
@@ -66,24 +63,22 @@ function PokemonInfo({pokemonName}) {
   //   2. pokemonName but no pokemon: <PokemonInfoFallback name={pokemonName} />
   //   3. pokemon: <PokemonDataView pokemon={pokemon} />
 
-  if (error) {
+  if (status === Statuses.idle) {
+    return 'Submit a pokemon';
+  } else if (status === Statuses.pending) {
+    return <PokemonInfoFallback name={pokemonName} />;
+  } else if (status === Statuses.rejected) {
     return (
       <div role="alert">
         There was an error:{' '}
         <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
       </div>
     );
+  } else if (status === Statuses.resolved) {
+    return <PokemonDataView pokemon={pokemon} />;
   }
 
-  if (!pokemonName) {
-    return 'Submit a pokemon';
-  }
-
-  if (pokemonName && !pokemon) {
-    return <PokemonInfoFallback name={pokemonName} />;
-  }
-
-  return <PokemonDataView pokemon={pokemon} />;
+  throw new Error('This should be impossible.');
 }
 
 function App() {
