@@ -72,6 +72,10 @@ function App() {
     setPokemonName(newPokemonName);
   }
 
+  function handleReset() {
+    setPokemonName('');
+  }
+
   return (
     <div className="pokemon-info-app">
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
@@ -79,6 +83,7 @@ function App() {
       <div className="pokemon-info">
         <ErrorBoundary
           FallbackComponent={FallbackComponent}
+          onReset={handleReset}
           resetKeys={[pokemonName]}
         >
           <PokemonInfo pokemonName={pokemonName} />
@@ -88,11 +93,12 @@ function App() {
   );
 }
 
-const FallbackComponent = ({error}) => {
+const FallbackComponent = ({error, resetErrorBoundary}) => {
   return (
     <div role="alert">
       There was an error:{' '}
       <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>Try again</button>
     </div>
   );
 };
