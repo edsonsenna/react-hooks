@@ -2,6 +2,7 @@
 // http://localhost:3000/isolated/exercise/06.js
 
 import * as React from 'react';
+import {ErrorBoundary} from 'react-error-boundary';
 
 import {
   fetchPokemon,
@@ -76,7 +77,10 @@ function App() {
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        <ErrorBoundary key={pokemonName} FallbackComponent={FallbackComponent}>
+        <ErrorBoundary
+          FallbackComponent={FallbackComponent}
+          resetKeys={[pokemonName]}
+        >
           <PokemonInfo pokemonName={pokemonName} />
         </ErrorBoundary>
       </div>
@@ -92,31 +96,5 @@ const FallbackComponent = ({error}) => {
     </div>
   );
 };
-
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {error: null};
-  }
-
-  static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI.
-    return {error};
-  }
-
-  componentDidCatch(error, errorInfo) {
-    // You can also log the error to an error reporting service
-    console.log({error, errorInfo});
-  }
-
-  render() {
-    if (this.state.error) {
-      const {error} = this.state;
-      return <this.props.FallbackComponent error={error} />;
-    }
-
-    return this.props.children;
-  }
-}
 
 export default App;
